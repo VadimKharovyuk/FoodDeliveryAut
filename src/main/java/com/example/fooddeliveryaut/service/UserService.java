@@ -15,7 +15,6 @@ public interface UserService {
 
     UserResponseDto findUserDtoByEmail(String email);
 
-
     UserProjection findUserProjectionByEmail(String email);
     List<UserProjection> getAllUsersProjections();
 
