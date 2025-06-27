@@ -16,4 +16,6 @@ public interface AuthService extends UserDetailsService {
 
 
     UserResponseDto getCurrentUser(String token);
+
+    AuthResponseDto loginWithRememberMe(LoginRequestDto loginRequest, boolean rememberMe);
 }

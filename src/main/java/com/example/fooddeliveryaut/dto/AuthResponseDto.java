@@ -17,4 +17,6 @@ public class AuthResponseDto {
     private String type = "Bearer";
 
     private UserResponseDto user;
+
+    private Boolean rememberMe;
 }

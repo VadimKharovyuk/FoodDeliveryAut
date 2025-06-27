@@ -119,4 +119,40 @@ public class AuthServiceImpl implements AuthService {
             throw new UsernameNotFoundException("Пользователь с email " + email + " не найден");
         }
     }
+    // В AuthServiceImpl добавляем метод
+    @Override
+    @Transactional
+    public AuthResponseDto loginWithRememberMe(LoginRequestDto loginRequest, boolean rememberMe) {
+        log.info("Попытка авторизации пользователя: {} (Remember Me: {})",
+                loginRequest.getEmail(), rememberMe);
+
+        User user = userService.findByEmail(loginRequest.getEmail());
+
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Неверный email или пароль");
+        }
+
+        // Генерируем JWT токен с разным временем жизни
+        long tokenExpiration = rememberMe ?
+                7 * 24 * 60 * 60 * 1000L :  // 7 дней если Remember Me
+                24 * 60 * 60 * 1000L;       // 1 день обычно
+
+        String token = jwtUtil.generateTokenWithExpiration(
+                user.getEmail(),
+                user.getId(),
+                user.getUserRole().getAuthority(),
+                tokenExpiration
+        );
+
+        UserResponseDto userDto = userMapper.toResponseDto(user);
+
+        log.info("Пользователь {} успешно авторизован (Remember Me: {})",
+                user.getEmail(), rememberMe);
+
+        return AuthResponseDto.builder()
+                .token(token)
+                .user(userDto)
+                .rememberMe(rememberMe) // 🎯 Добавляем флаг
+                .build();
+    }
 }

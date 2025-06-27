@@ -1,6 +1,5 @@
 package com.example.fooddeliveryaut.config;
 
-
 import com.example.fooddeliveryaut.config.security.JwtAuthenticationEntryPoint;
 import com.example.fooddeliveryaut.config.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +12,10 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+
+import javax.sql.DataSource;
 
 @Configuration
 @EnableWebSecurity
@@ -21,6 +24,7 @@ public class SecurityConfig {
 
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final DataSource dataSource; // 🎯 Добавляем DataSource для Remember Me
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -41,24 +45,34 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/validate-token").authenticated()
                         .requestMatchers("/api/auth/logout").authenticated()
 
-                        // 👑 Endpoints для админа (в будущем)
+                        // 👑 Endpoints для ролей
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-
-                        // 🏪 Endpoints для бизнес-пользователей (в будущем)
                         .requestMatchers("/api/business/**").hasAnyRole("BUSINESS", "ADMIN")
-
-                        // 🚚 Endpoints для курьеров (в будущем)
                         .requestMatchers("/api/courier/**").hasAnyRole("COURIER", "ADMIN")
-
-                        // 🛒 Endpoints для пользователей (в будущем)
                         .requestMatchers("/api/user/**").hasAnyRole("USER", "BUSINESS", "COURIER", "ADMIN")
 
-                        // Все остальное пока открыто (для разработки)
                         .anyRequest().permitAll()
+                )
+                // 🍪 Remember Me конфигурация
+                .rememberMe(remember -> remember
+                        .key("food-delivery-remember-me-key") // Секретный ключ
+                        .tokenRepository(persistentTokenRepository()) // БД для токенов
+                        .tokenValiditySeconds(7 * 24 * 60 * 60) // 7 дней
+                        .userDetailsService(null) // Укажем в AuthService
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    /**
+     * 🍪 Repository для хранения Remember Me токенов в БД
+     */
+    @Bean
+    public PersistentTokenRepository persistentTokenRepository() {
+        JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
+        tokenRepository.setDataSource(dataSource);
+        return tokenRepository;
     }
 
     @Bean
