@@ -1,4 +1,4 @@
-package com.example.fooddeliveryaut.config;
+package com.example.fooddeliveryaut.config.security;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

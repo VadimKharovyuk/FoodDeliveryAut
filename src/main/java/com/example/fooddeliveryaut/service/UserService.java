@@ -13,18 +13,16 @@ public interface UserService {
     UserResponseDto registerUser(UserRegistrationDto registrationDto);
     User findByEmail(String email);
 
-
-    // DTO методы
     UserResponseDto findUserDtoByEmail(String email);
 
-    // Projection методы
+
     UserProjection findUserProjectionByEmail(String email);
     List<UserProjection> getAllUsersProjections();
 
-    // Утилитарные методы
+
     boolean existsByEmail(String email);
 
-    // В UserService интерфейс:
+
     User findById(Long userId);
     UserResponseDto findUserDtoById(Long userId);
     UserProjection findUserProjectionById(Long userId);

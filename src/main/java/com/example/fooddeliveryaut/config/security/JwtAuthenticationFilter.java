@@ -1,4 +1,4 @@
-package com.example.fooddeliveryaut.config;
+package com.example.fooddeliveryaut.config.security;
 
 import com.example.fooddeliveryaut.service.AuthService;
 import com.example.fooddeliveryaut.util.JwtUtil;

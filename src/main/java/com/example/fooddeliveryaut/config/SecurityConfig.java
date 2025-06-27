@@ -1,6 +1,8 @@
 package com.example.fooddeliveryaut.config;
 
 
+import com.example.fooddeliveryaut.config.security.JwtAuthenticationEntryPoint;
+import com.example.fooddeliveryaut.config.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,7 +34,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/api/auth/test").permitAll()
                         .requestMatchers("/api/registration/test").permitAll()
-                        .requestMatchers("/actuator/**").permitAll()  // Actuator endpoints
+                        .requestMatchers("/actuator/**").permitAll()
 
                         // 🔒 Защищенные endpoints
                         .requestMatchers("/api/auth/me").authenticated()
