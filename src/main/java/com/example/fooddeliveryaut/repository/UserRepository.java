@@ -39,4 +39,19 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "u.lastName as lastName, u.userRole as userRole " +
             "FROM User u WHERE u.userRole = :role")
     List<UserProjection> findProjectionsByRole(@Param("role") UserRole role);
+
+    // 🔧 ИСПРАВЛЕННЫЕ методы для работы с ролями
+    // Используем userRole вместо role
+    boolean existsByUserRole(UserRole userRole);
+
+    long countByUserRole(UserRole userRole);
+
+    Optional<User> findFirstByUserRole(UserRole userRole);
+
+    // Альтернативно можно использовать @Query для более сложных запросов
+    @Query("SELECT COUNT(u) > 0 FROM User u WHERE u.userRole = :role")
+    boolean existsUserWithRole(@Param("role") UserRole role);
+
+    @Query("SELECT COUNT(u) FROM User u WHERE u.userRole = :role")
+    long countUsersWithRole(@Param("role") UserRole role);
 }
