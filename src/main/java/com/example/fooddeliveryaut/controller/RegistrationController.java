@@ -26,14 +26,6 @@ public class RegistrationController {
     private final UserService userService;
 
 
-    @GetMapping("/roles")
-    public ResponseEntity<List<UserRole>> getAvailableRoles() {
-        List<UserRole> roles = Arrays.asList(UserRole.getRegistrationRoles());
-        log.debug("Запрос доступных ролей для регистрации");
-        return ResponseEntity.ok(roles);
-    }
-
-
     @PostMapping("/register")
     public ResponseEntity<UserResponseDto> register(@RequestBody UserRegistrationDto registrationDto) {
         log.info("Запрос на регистрацию пользователя с email: {}", registrationDto.getEmail());
@@ -48,6 +40,15 @@ public class RegistrationController {
             throw new RuntimeException(e.getMessage());
         }
     }
+
+    @GetMapping("/roles")
+    public ResponseEntity<List<UserRole>> getAvailableRoles() {
+        List<UserRole> roles = Arrays.asList(UserRole.getRegistrationRoles());
+        log.debug("Запрос доступных ролей для регистрации");
+        return ResponseEntity.ok(roles);
+    }
+
+
 
 
     @GetMapping("/check-email")
