@@ -24,7 +24,6 @@ public class UserResponseDto {
 
     private String lastName;
 
-    private String imgUrl;
 
     private UserRole userRole;
 

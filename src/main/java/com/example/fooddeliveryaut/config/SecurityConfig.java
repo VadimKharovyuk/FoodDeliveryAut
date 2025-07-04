@@ -24,7 +24,7 @@ public class SecurityConfig {
 
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final DataSource dataSource;
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -53,27 +53,12 @@ public class SecurityConfig {
 
                         .anyRequest().permitAll()
                 )
-                // 🍪 Remember Me конфигурация
-                .rememberMe(remember -> remember
-                        .key("food-delivery-remember-me-key") // Секретный ключ
-                        .tokenRepository(persistentTokenRepository()) // БД для токенов
-                        .tokenValiditySeconds(7 * 24 * 60 * 60) // 7 дней
-                        .userDetailsService(null) // Укажем в AuthService
-                )
+
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    /**
-     * 🍪 Repository для хранения Remember Me токенов в БД
-     */
-    @Bean
-    public PersistentTokenRepository persistentTokenRepository() {
-        JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
-        tokenRepository.setDataSource(dataSource);
-        return tokenRepository;
-    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {

@@ -27,14 +27,8 @@ public class User {
 
     private String password;
 
-    private String imgUrl;
-    private String imgId;
-
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
-
-
-
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -43,9 +37,6 @@ public class User {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
-
-
-
 
 
 }

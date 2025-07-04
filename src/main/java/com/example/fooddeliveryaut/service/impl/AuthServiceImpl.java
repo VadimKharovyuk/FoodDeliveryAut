@@ -36,29 +36,38 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponseDto login(LoginRequestDto loginRequest) {
         log.info("Попытка авторизации пользователя: {}", loginRequest.getEmail());
 
-        // Находим пользователя
         User user = userService.findByEmail(loginRequest.getEmail());
 
-        // Проверяем пароль
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             throw new RuntimeException("Неверный email или пароль");
         }
 
-        // Генерируем JWT токен
-        String token = jwtUtil.generateToken(
-                user.getEmail(),
-                user.getId(),
-                user.getUserRole().getAuthority()
-        );
+        // 🎫 Генерируем JWT токен (с учетом Remember Me)
+        String token;
+        if (Boolean.TRUE.equals(loginRequest.getRememberMe())) {
+            // Токен на 7 дней для Remember Me
+            token = jwtUtil.generateRememberMeToken(
+                    user.getEmail(),
+                    user.getId(),
+                    user.getUserRole().getAuthority()
+            );
+            log.info("Сгенерирован Remember Me токен для пользователя: {}", user.getEmail());
+        } else {
+            // Обычный токен на 1 день
+            token = jwtUtil.generateToken(
+                    user.getEmail(),
+                    user.getId(),
+                    user.getUserRole().getAuthority()
+            );
+            log.info("Сгенерирован обычный токен для пользователя: {}", user.getEmail());
+        }
 
-        // Создаем ответ
         UserResponseDto userDto = userMapper.toResponseDto(user);
-
         log.info("Пользователь {} успешно авторизован", user.getEmail());
-
         return AuthResponseDto.builder()
                 .token(token)
                 .user(userDto)
+                .rememberMe(loginRequest.getRememberMe())
                 .build();
     }
 
