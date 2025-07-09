@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌍 Food Delivery - Location API Tester</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      font-size: 1.1em;
+      opacity: 0.9;
+    }
+
+    .main-content {
+      padding: 30px;
+    }
+
+    .token-section {
+      background: #f8fafc;
+      border: 2px dashed #e2e8f0;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+
+    .token-section h3 {
+      color: #374151;
+      margin-bottom: 15px;
+      font-size: 1.2em;
+    }
+
+    .token-input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .token-input:focus {
+      outline: none;
+      border-color: #4f46e5;
+    }
+
+    .methods-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 25px;
+      margin-bottom: 30px;
+    }
+
+    .method-card {
+      background: white;
+      border: 2px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 25px;
+      transition: all 0.3s ease;
+    }
+
+    .method-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+      border-color: #4f46e5;
+    }
+
+    .method-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .method-icon {
+      font-size: 1.5em;
+      margin-right: 10px;
+    }
+
+    .method-title {
+      font-size: 1.1em;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .method-subtitle {
+      font-size: 0.9em;
+      color: #6b7280;
+      margin-top: 5px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      color: #374151;
+      font-size: 0.9em;
+    }
+
+    .form-input, .form-select {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-input:focus, .form-select:focus {
+      outline: none;
+      border-color: #4f46e5;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn.btn-danger {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    .btn.btn-danger:hover {
+      box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3);
+    }
+
+    .response-section {
+      margin-top: 30px;
+      background: #f8fafc;
+      border-radius: 16px;
+      padding: 25px;
+    }
+
+    .response-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .response-title {
+      font-size: 1.3em;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .clear-btn {
+      background: #6b7280;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .response-content {
+      background: #1f2937;
+      color: #f9fafb;
+      padding: 20px;
+      border-radius: 12px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      max-height: 400px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+
+    .status-indicator {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .status-success {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .status-error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .status-info {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .location-info {
+      background: #f0f9ff;
+      border: 2px solid #0ea5e9;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .location-info h4 {
+      color: #0c4a6e;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+    }
+
+    .location-info h4::before {
+      content: "📍";
+      margin-right: 8px;
+    }
+
+    .location-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      font-size: 14px;
+    }
+
+    .location-detail {
+      background: white;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #0ea5e9;
+    }
+
+    .location-detail strong {
+      color: #0c4a6e;
+    }
+
+    .auto-location-btn {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      margin-bottom: 15px;
+    }
+
+    .auto-location-btn:hover {
+      box-shadow: 0 10px 20px rgba(5, 150, 105, 0.3);
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🌍 Location API Tester</h1>
+    <p>Тестирование API геолокации пользователей Food Delivery</p>
+  </div>
+
+  <div class="main-content">
+    <!-- Секция для токена -->
+    <div class="token-section">
+      <h3>🔐 JWT Token</h3>
+      <input type="text" id="jwtToken" class="token-input"
+             placeholder="Вставьте ваш JWT токен здесь..."
+             value="eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJMdWNreTEyM0BleGFtcGxlLmNvbSIsInVzZXJJZCI6MTEsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3NTE4MDYzMDksImV4cCI6MTc1MjQxMTEwOX0.U67zYXJszjOBnfZhBBbyhcxG6uhot_8uq_CM3Hlth_Y">
+    </div>
+
+    <!-- Информация о текущей геолокации -->
+    <div id="currentLocationInfo" class="location-info" style="display: none;">
+      <h4>Текущая геолокация пользователя</h4>
+      <div id="locationDetails" class="location-details"></div>
+    </div>
+
+    <!-- Сетка методов -->
+    <div class="methods-grid">
+      <!-- 1. Получение текущей геолокации -->
+      <div class="method-card">
+        <div class="method-header">
+          <span class="method-icon">📍</span>
+          <div>
+            <div class="method-title">Получить геолокацию</div>
+            <div class="method-subtitle">GET /api/users/me/location</div>
+          </div>
+        </div>
+        <button class="btn" onclick="getCurrentLocation()">Получить геолокацию</button>
+      </div>
+
+      <!-- 2. Обновление геолокации -->
+      <div class="method-card">
+        <div class="method-header">
+          <span class="method-icon">🌍</span>
+          <div>
+            <div class="method-title">Обновить геолокацию</div>
+            <div class="method-subtitle">PUT /api/users/me/location</div>
+          </div>
+        </div>
+
+        <button class="btn auto-location-btn" onclick="getBrowserLocation()">📱 Получить текущие координаты</button>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Широта</label>
+            <input type="number" id="latitude" class="form-input" step="any" placeholder="50.450100">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Долгота</label>
+            <input type="number" id="longitude" class="form-input" step="any" placeholder="30.523400">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Адрес</label>
+          <input type="text" id="street" class="form-input" placeholder="Крещатик, 10">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Город</label>
+            <input type="text" id="city" class="form-input" placeholder="Киев">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Страна</label>
+            <input type="text" id="country" class="form-input" placeholder="Украина">
+          </div>
+        </div>
+
+        <button class="btn" onclick="updateLocation()">Обновить геолокацию</button>
+      </div>
+
+      <!-- 3. Поиск магазинов (POST) -->
+      <div class="method-card">
+        <div class="method-header">
+          <span class="method-icon">🔍</span>
+          <div>
+            <div class="method-title">Поиск магазинов (POST)</div>
+            <div class="method-subtitle">POST /api/users/me/nearby-stores</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Радиус (км)</label>
+            <input type="number" id="radiusPost" class="form-input" value="10" min="1" max="50">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Лимит</label>
+            <input type="number" id="limitPost" class="form-input" value="20" min="1" max="100">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Категория</label>
+            <select id="categoryPost" class="form-select">
+              <option value="">Все категории</option>
+              <option value="Фастфуд">Фастфуд</option>
+              <option value="Пицца">Пицца</option>
+              <option value="Суши">Суши</option>
+              <option value="Десерты">Десерты</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Мин. рейтинг</label>
+            <input type="number" id="minRatingPost" class="form-input" step="0.1" min="1" max="5" placeholder="4.0">
+          </div>
+        </div>
+
+        <button class="btn" onclick="searchStoresPost()">Найти магазины</button>
+      </div>
+
+      <!-- 4. Поиск магазинов (GET) -->
+      <div class="method-card">
+        <div class="method-header">
+          <span class="method-icon">🔍</span>
+          <div>
+            <div class="method-title">Поиск магазинов (GET)</div>
+            <div class="method-subtitle">GET /api/users/me/nearby-stores</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Радиус (км)</label>
+            <input type="number" id="radiusGet" class="form-input" value="5" min="1" max="50">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Лимит</label>
+            <input type="number" id="limitGet" class="form-input" value="10" min="1" max="100">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Категория</label>
+          <select id="categoryGet" class="form-select">
+            <option value="">Все категории</option>
+            <option value="Фастфуд">Фастфуд</option>
+            <option value="Пицца">Пицца</option>
+            <option value="Суши">Суши</option>
+          </select>
+        </div>
+
+        <button class="btn" onclick="searchStoresGet()">Найти магазины (GET)</button>
+      </div>
+
+      <!-- 5. Расчет расстояния -->
+      <div class="method-card">
+        <div class="method-header">
+          <span class="method-icon">📏</span>
+          <div>
+            <div class="method-title">Расчет расстояния</div>
+            <div class="method-subtitle">GET /api/users/me/distance-to-store/{id}</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">ID магазина</label>
+          <input type="number" id="storeId" class="form-input" value="1" min="1">
+        </div>
+
+        <button class="btn" onclick="calculateDistance()">Рассчитать расстояние</button>
+      </div>
+
+      <!-- 6. Статус геолокации -->
+      <div class="method-card">
+        <div class="method-header">
+          <span class="method-icon">🆔</span>
+          <div>
+            <div class="method-title">Статус геолокации</div>
+            <div class="method-subtitle">GET /api/users/me/location/status</div>
+          </div>
+        </div>
+
+        <button class="btn" onclick="getLocationStatus()">Получить статус</button>
+      </div>
+
+      <!-- 7. Очистка геолокации -->
+      <div class="method-card">
+        <div class="method-header">
+          <span class="method-icon">🧹</span>
+          <div>
+            <div class="method-title">Очистить геолокацию</div>
+            <div class="method-subtitle">DELETE /api/users/me/location</div>
+          </div>
+        </div>
+
+        <button class="btn btn-danger" onclick="clearLocation()">Очистить геолокацию</button>
+      </div>
+
+      <!-- 8. Статистика (админ) -->
+      <div class="method-card">
+        <div class="method-header">
+          <span class="method-icon">📊</span>
+          <div>
+            <div class="method-title">Статистика</div>
+            <div class="method-subtitle">GET /api/users/location-stats</div>
+          </div>
+        </div>
+
+        <button class="btn" onclick="getLocationStats()">Получить статистику</button>
+      </div>
+    </div>
+
+    <!-- Секция ответов -->
+    <div class="response-section">
+      <div class="response-header">
+        <div class="response-title">📤 Ответы API</div>
+        <button class="clear-btn" onclick="clearResponses()">Очистить</button>
+      </div>
+      <div id="responseContainer" class="response-content">Здесь будут отображаться ответы API...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API_BASE = 'http://localhost:8081/api/users';
+
+  // Получение токена
+  function getToken() {
+    return document.getElementById('jwtToken').value.trim();
+  }
+
+  // Общая функция для отправки запросов
+  async function makeRequest(method, url, body = null) {
+    const token = getToken();
+    if (!token) {
+      addResponse('❌ ОШИБКА: JWT токен не указан', 'error');
+      return;
+    }
+
+    const options = {
+      method: method,
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    };
+
+    if (body) {
+      options.body = JSON.stringify(body);
+    }
+
+    try {
+      addResponse(`📤 ${method} ${url}${body ? '\n📋 Body: ' + JSON.stringify(body, null, 2) : ''}`, 'info');
+
+      const response = await fetch(url, options);
+      const data = await response.json();
+
+      const statusClass = response.ok ? 'success' : 'error';
+      addResponse(`📥 ${response.status} ${response.statusText}\n${JSON.stringify(data, null, 2)}`, statusClass);
+
+      // Обновляем информацию о геолокации если запрос успешен
+      if (response.ok && (url.includes('/location') || url.includes('/address'))) {
+        updateLocationInfo(data.data);
+      }
+
+      return data;
+    } catch (error) {
+      addResponse(`❌ ОШИБКА СЕТИ: ${error.message}`, 'error');
+    }
+  }
+
+  // Добавление ответа в контейнер
+  function addResponse(text, type) {
+    const container = document.getElementById('responseContainer');
+    const timestamp = new Date().toLocaleTimeString();
+    const statusIndicator = `<div class="status-indicator status-${type}">${timestamp} - ${type.toUpperCase()}</div>`;
+    container.innerHTML += statusIndicator + text + '\n\n' + '─'.repeat(80) + '\n\n';
+    container.scrollTop = container.scrollHeight;
+  }
+
+  // Очистка ответов
+  function clearResponses() {
+    document.getElementById('responseContainer').innerHTML = 'Здесь будут отображаться ответы API...';
+  }
+
+  // Обновление информации о геолокации
+  function updateLocationInfo(userData) {
+    const infoDiv = document.getElementById('currentLocationInfo');
+    const detailsDiv = document.getElementById('locationDetails');
+
+    if (userData && userData.hasLocation) {
+      infoDiv.style.display = 'block';
+      detailsDiv.innerHTML = `
+                    <div class="location-detail">
+                        <strong>Координаты:</strong><br>
+                        ${userData.formattedCoordinates || 'Не указаны'}
+                    </div>
+                    <div class="location-detail">
+                        <strong>Адрес:</strong><br>
+                        ${userData.shortAddress || 'Не указан'}
+                    </div>
+                    <div class="location-detail">
+                        <strong>Полный адрес:</strong><br>
+                        ${userData.fullAddress || 'Не указан'}
+                    </div>
+                    <div class="location-detail">
+                        <strong>Статус:</strong><br>
+                        ${userData.locationStatus || 'Неизвестен'}
+                    </div>
+                    <div class="location-detail">
+                        <strong>Обновлено:</strong><br>
+                        ${userData.locationUpdatedAt || 'Никогда'}
+                    </div>
+                `;
+    } else {
+      infoDiv.style.display = 'none';
+    }
+  }
+
+  // Получение координат браузера
+  function getBrowserLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+              (position) => {
+                document.getElementById('latitude').value = position.coords.latitude.toFixed(6);
+                document.getElementById('longitude').value = position.coords.longitude.toFixed(6);
+                addResponse(`📱 Координаты браузера получены: ${position.coords.latitude}, ${position.coords.longitude}`, 'success');
+              },
+              (error) => {
+                addResponse(`❌ Ошибка получения координат: ${error.message}`, 'error');
+              }
+      );
+    } else {
+      addResponse('❌ Геолокация не поддерживается браузером', 'error');
+    }
+  }
+
+  // API методы
+  function getCurrentLocation() {
+    makeRequest('GET', `${API_BASE}/me/location`);
+  }
+
+  function updateLocation() {
+    const body = {
+      latitude: parseFloat(document.getElementById('latitude').value) || null,
+      longitude: parseFloat(document.getElementById('longitude').value) || null,
+      street: document.getElementById('street').value || null,
+      city: document.getElementById('city').value || null,
+      country: document.getElementById('country').value || null,
+      autoGeocode: true
+    };
+
+    // Удаляем пустые поля
+    Object.keys(body).forEach(key => {
+      if (body[key] === null || body[key] === '') delete body[key];
+    });
+
+    makeRequest('PUT', `${API_BASE}/me/location`, body);
+  }
+
+  function searchStoresPost() {
+    const body = {
+      radiusKm: parseInt(document.getElementById('radiusPost').value),
+      limit: parseInt(document.getElementById('limitPost').value),
+      category: document.getElementById('categoryPost').value || null,
+      minRating: parseFloat(document.getElementById('minRatingPost').value) || null,
+      onlyOpen: true
+    };
+
+    Object.keys(body).forEach(key => {
+      if (body[key] === null) delete body[key];
+    });
+
+    makeRequest('POST', `${API_BASE}/me/nearby-stores`, body);
+  }
+
+  function searchStoresGet() {
+    const radiusKm = document.getElementById('radiusGet').value;
+    const limit = document.getElementById('limitGet').value;
+    const category = document.getElementById('categoryGet').value;
+
+    let url = `${API_BASE}/me/nearby-stores?radiusKm=${radiusKm}&limit=${limit}`;
+    if (category) url += `&category=${encodeURIComponent(category)}`;
+
+    makeRequest('GET', url);
+  }
+
+  function calculateDistance() {
+    const storeId = document.getElementById('storeId').value;
+    makeRequest('GET', `${API_BASE}/me/distance-to-store/${storeId}`);
+  }
+
+  function getLocationStatus() {
+    makeRequest('GET', `${API_BASE}/me/location/status`);
+  }
+
+  function clearLocation() {
+    if (confirm('Вы уверены, что хотите очистить геолокацию?')) {
+      makeRequest('DELETE', `${API_BASE}/me/location`);
+    }
+  }
+
+  function getLocationStats() {
+    makeRequest('GET', `${API_BASE}/location-stats`);
+  }
+
+  // Загружаем текущую геолокацию при загрузке страницы
+  window.onload = function() {
+    setTimeout(() => {
+      getCurrentLocation();
+    }, 1000);
+  };
+</script>
+</body>
+</html>
