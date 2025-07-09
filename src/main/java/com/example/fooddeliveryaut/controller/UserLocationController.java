@@ -348,60 +348,7 @@ public class UserLocationController {
         return jwtUtil.getUserIdFromToken(token);
     }
 
-    /**
-     * 🔐 Альтернативный способ получения userId через SecurityContext
-     * Более безопасный способ, использующий Spring Security
-     */
-    private Long getUserIdFromSecurityContext() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new RuntimeException("Пользователь не аутентифицирован");
-        }
-
-        String email = authentication.getName();
-
-        // Можно получить ID через email, если нужно
-        // User user = userService.findByEmail(email);
-        // return user.getId();
-
-        // Или если ID сохранен в токене
-        String authHeader = getCurrentAuthHeader();
-        return getUserIdFromToken(authHeader);
-    }
-
-    /**
-     * 🔍 Извлечение роли пользователя из JWT токена
-     */
-    private String getUserRoleFromToken(String authHeader) {
-        String token = authHeader.substring(7);
-
-        // Если в JwtUtil есть метод для получения роли
-        // return jwtUtil.getRoleFromToken(token);
-
-        // Или через Spring Security
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getAuthorities() != null) {
-            return authentication.getAuthorities().iterator().next().getAuthority();
-        }
-
-        return "USER"; // Временная заглушка
-    }
-
-    /**
-     * 🔍 Получение текущего Authorization header (для SecurityContext метода)
-     */
-    private String getCurrentAuthHeader() {
-        // Этот метод нужен, если используете getUserIdFromSecurityContext()
-        // В реальности header лучше передавать как параметр
-        return "Bearer " + getCurrentToken();
-    }
-
-    private String getCurrentToken() {
-        // Логика получения текущего токена из SecurityContext или Request
-        // Временная заглушка
-        return "";
-    }
 
     /**
      * 🔍 Создание строки фильтров для сложного поиска
