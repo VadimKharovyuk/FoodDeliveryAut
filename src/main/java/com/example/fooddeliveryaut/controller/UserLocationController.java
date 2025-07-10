@@ -22,12 +22,41 @@ public class UserLocationController {
     private final UserLocationService userLocationService;
     private final JwtUtil jwtUtil;
 
+
+    /**
+     * 📍 Получение текущей геолокации пользователя
+     */
+    @GetMapping("/me/location")
+    public ResponseEntity<ApiResponse<UserLocationDto>> getUserLocation(
+            @RequestHeader("Authorization") String authHeader) {
+
+        try {
+            Long userId = getUserIdFromToken(authHeader);
+
+            log.debug("📍 Запрос геолокации от пользователя {}", userId);
+
+            UserLocationDto locationDto = userLocationService.getUserLocation(userId);
+
+            return ResponseEntity.ok(
+                    ApiResponse.success(locationDto,
+                            locationDto.getHasLocation() ? "Геолокация найдена" : "Геолокация не установлена")
+            );
+
+        } catch (Exception e) {
+            log.error("❌ Ошибка получения геолокации: {}", e.getMessage());
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error("Ошибка получения геолокации: " + e.getMessage()));
+        }
+    }
+
+
     /**
      * 📍 Обновление геолокации пользователя (координаты от браузера)
      */
     @PutMapping("/me/location")
     public ResponseEntity<ApiResponse<UserResponseDto>> updateUserLocation(
-            @Valid @RequestBody UpdateUserLocationDto locationDto,
+//            @Valid
+            @RequestBody UpdateUserLocationDto locationDto,
             @RequestHeader("Authorization") String authHeader) {
 
         try {
@@ -76,31 +105,33 @@ public class UserLocationController {
         }
     }
 
+
+
     /**
-     * 📍 Получение текущей геолокации пользователя
+     * 🧹 Очистка геолокации пользователя
      */
-    @GetMapping("/me/location")
-    public ResponseEntity<ApiResponse<UserLocationDto>> getUserLocation(
+    @DeleteMapping("/me/location")
+    public ResponseEntity<ApiResponse<UserResponseDto>> clearUserLocation(
             @RequestHeader("Authorization") String authHeader) {
 
         try {
             Long userId = getUserIdFromToken(authHeader);
 
-            log.debug("📍 Запрос геолокации от пользователя {}", userId);
+            log.info("🧹 Запрос очистки геолокации от пользователя {}", userId);
 
-            UserLocationDto locationDto = userLocationService.getUserLocation(userId);
+            UserResponseDto updatedUser = userLocationService.clearUserLocation(userId);
 
             return ResponseEntity.ok(
-                    ApiResponse.success(locationDto,
-                            locationDto.getHasLocation() ? "Геолокация найдена" : "Геолокация не установлена")
+                    ApiResponse.success(updatedUser, "Геолокация успешно очищена")
             );
 
         } catch (Exception e) {
-            log.error("❌ Ошибка получения геолокации: {}", e.getMessage());
+            log.error("❌ Ошибка очистки геолокации: {}", e.getMessage());
             return ResponseEntity.badRequest()
-                    .body(ApiResponse.error("Ошибка получения геолокации: " + e.getMessage()));
+                    .body(ApiResponse.error("Ошибка очистки геолокации: " + e.getMessage()));
         }
     }
+
 
     /**
      * 🔍 Поиск ближайших магазинов к пользователю (с параметрами)
@@ -228,30 +259,6 @@ public class UserLocationController {
         }
     }
 
-    /**
-     * 🧹 Очистка геолокации пользователя
-     */
-    @DeleteMapping("/me/location")
-    public ResponseEntity<ApiResponse<UserResponseDto>> clearUserLocation(
-            @RequestHeader("Authorization") String authHeader) {
-
-        try {
-            Long userId = getUserIdFromToken(authHeader);
-
-            log.info("🧹 Запрос очистки геолокации от пользователя {}", userId);
-
-            UserResponseDto updatedUser = userLocationService.clearUserLocation(userId);
-
-            return ResponseEntity.ok(
-                    ApiResponse.success(updatedUser, "Геолокация успешно очищена")
-            );
-
-        } catch (Exception e) {
-            log.error("❌ Ошибка очистки геолокации: {}", e.getMessage());
-            return ResponseEntity.badRequest()
-                    .body(ApiResponse.error("Ошибка очистки геолокации: " + e.getMessage()));
-        }
-    }
 
     /**
      * 📊 Статистика по геолокации пользователей (только для админов)
